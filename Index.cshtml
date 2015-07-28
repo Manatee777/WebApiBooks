@@ -1,0 +1,255 @@
+﻿
+
+
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    //<LOAD LIST>
+    $(document).ready(function () {
+        jQuery.support.cors = true;
+        $.ajax({
+            url: '/api/book/', //url je tvořená v webapiconfig file ve formátu api + jména controlleru
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+            WriteResponses(data);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+
+            }
+        });
+
+        //Displays in a Table
+        function WriteResponses(books) {
+            var strResult = "<table><th>Název</th><th>ID</th><th>Typ</th><th>Rok</th>";
+            $.each(books, function (index, book) {
+                strResult += "<tr><td>" + book.name + "</td><td> " + book.id + "</td><td>" + book.type + "</td><td>" + book.year + "</td></tr>";
+            });
+            strResult += "</table>";
+            $("#divResult").html(strResult);
+
+        }
+
+    });
+
+
+    //<LOAD LIST>
+
+
+
+
+
+
+
+
+    //<GET BOOK>
+
+   
+    function GetBook() {
+        jQuery.support.cors = true; //cross domain allowed  
+        $.ajax({
+            url: 'http://localhost:53733/api/book/' + document.getElementById('bookId').value, //naroutuje si controller + id knihy
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) { //vezme json s knihou daneho id a preda html
+                WriteResponse(data);
+            },
+            error: function (x, y, z) {
+                alert('not found by ID');
+
+            }
+
+        });
+
+        function WriteResponse(book) {
+            document.getElementById('name').innerHTML = "<h5>" + book.name + "</h5>";
+            document.getElementById('id').innerHTML = "<h5>" + book.id + "</h5>";
+            document.getElementById('type').innerHTML = "<h5>" + book.type + "</h5>";
+            document.getElementById('year').innerHTML = "<h5>" + book.year + "</h5>";
+        }
+
+    }
+
+    //<GET BOOK>
+
+
+
+
+
+    //<ADD BOOK>
+
+    function AddBook() {
+        var book = {
+            name: document.getElementById('newBookName').value,
+            id: document.getElementById('newBookId').value,
+            type: document.getElementById('newBookType').value,
+            year: document.getElementById('newBookYear').value
+        };
+
+            
+
+        $.ajax({
+            url: 'http://localhost:53733/api/book/',
+            type: 'POST',
+            data: JSON.stringify(book),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                alert('Book added Successfully');
+                GetAllBooks();
+            },
+            error: function () {
+                alert('Book not Added');
+            }
+        });
+
+    }
+
+    //<ADD BOOK>
+
+
+
+
+    //<PUT BOOK>
+
+        function PutBook() {
+            var book = {
+                name: document.getElementById('newBookName').value,
+                id: document.getElementById('newBookId').value,
+                type: document.getElementById('newBookType').value,
+                year: document.getElementById('newBookYear').value
+            };
+
+            $.ajax({
+                url: 'http://localhost:53733/api/book/' + document.getElementById('newBookId').value,
+                type: 'PUT',
+                data: JSON.stringify(book), //book je JS element, ktery stringify prevede do jsonu
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    alert('Details Updated Successfully');
+                    GetAllBooks();
+                },
+                error: function () {
+                    alert('Unable to Update for the Given ID');
+                }
+            });
+
+        }
+    //<PUT BOOK>
+
+
+
+    //<GET ALL BOOKS>
+
+                function GetAllBooks() {
+                    jQuery.support.cors = true;
+                    $.ajax({
+                        url: 'http://localhost:53733/api/book',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            WriteResponses(data);
+                        },
+                        error: function (x, y, z) {
+                            alert(x + '\n' + y + '\n' + z);
+                        }
+                    });
+
+                    function WriteResponses(books) {
+                        var strResult = "<table><th>Název</th><th>ID</th><th>Typ</th><th>Rok</th>";
+                        $.each(books, function (index, book) {
+                            strResult += "<tr><td>" + book.name + "</td><td> " + book.id + "</td><td>" + book.type + "</td><td>" + book.year + "</td></tr>";
+                        });
+                        strResult += "</table>";
+                        $("#divResult").html(strResult);
+               
+
+                }
+            }
+    //</GET ALL BOOKS>       
+    
+
+</script>
+
+
+
+
+
+
+<h3 style="color: #f00">WebApi seznam knih </h3>
+<div id="divResult" style="margin-left: 15px"></div>
+
+
+
+<div style="margin-left: 15px">
+    <h5>Zadejte ID knihy:</h5>
+    <input id="bookId" type="text" />
+    <button id="GetBook" onclick="GetBook()">Získej knihu</button>
+</div>
+<div style="margin-left: 15px">
+    <table>
+        <tr>
+            <td>
+                <h5>Jméno</h5>
+            </td>
+            <td><span id="name"></span></td>
+        </tr>
+        <tr>
+            <td>
+                <h5>ID</h5>
+            </td>
+            <td><span id="id"></span></td>
+        </tr>
+        <tr>
+            <td>
+                <h5>Typ</h5>
+            </td>
+            <td><span id="type"></span></td>
+        </tr>
+        <tr>
+            <td>
+                <h5>Rok</h5>
+            </td>
+            <td><span id="year"></span></td>
+        </tr>
+    </table>
+</div>
+<div>
+<h3 style="color: #f00">Přidej nebo updatuj knihu </h3>
+<table style="margin-left: 15px">
+    <tr>
+        <td><span>Name</span></td>
+        <td>
+            <input id="newBookName" type="text" />
+        </td>
+    </tr>
+    <tr>
+        <td><span>ID</span></td>
+        <td>
+            <input id="newBookId" type="number" />
+        </td>
+    </tr>
+    <tr>
+        <td><span>Type</span></td>
+        <td>
+            <select id="newBookType">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><span>Year</span></td>
+        <td>
+            <input id="newBookYear" type="number" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button id="postBook" onclick="AddBook()">Přidej knihu</button>
+        </td>
+        <td>
+            <button id="putBook" onclick="PutBook()">Updatuj knihu</button>
+        </td>
+    </tr>
+</table>
+</div>
